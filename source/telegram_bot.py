@@ -34,6 +34,7 @@ async def handle_make(msg: types.Message):
 async def handle_reset(msg: types.Message):
     await msg.answer("not implemented")
 
+
 @dp.message_handler(commands=['lang'])
 async def handle_lang(msg: types.Message):
     await msg.answer("not implemented")
@@ -62,7 +63,7 @@ async def handle_photo_message(msg: types.Message):
     file_info = await bot.get_file(fileID)
     downloaded_file = await bot.download_file(file_info.file_path)
     with open(f"tmp/{msg.from_user.id}/{fileID}", "wb") as new_file:
-         new_file.write(downloaded_file.getvalue())
+        new_file.write(downloaded_file.getvalue())
     await msg.answer("OK!")
 
 
