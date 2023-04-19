@@ -1,0 +1,8 @@
+version: '3.5'
+
+services:
+    converty:
+        image: converty_img:latest
+        container_name: converty_bot
+        volumes:
+            - ./source:/root/converty
