@@ -1,11 +1,14 @@
 FROM python:3.11
 # set work directory
 WORKDIR /root/converty/
-# copy project
-# COPY . /usr/src/app/
 # install dependencies
 COPY Pipfile Pipfile.lock ./
 RUN pip install pipenv
 RUN pipenv install --dev --system --deploy
+COPY locales /etc/locales
+RUN pybabel compile -D converty -d /etc/locales -l ru
+RUN pybabel compile -D converty -d /etc/locales -l en
+RUN pybabel compile -D converty -d /etc/locales -l fr
+ENV LOCALES_PATH=/etc/locales
 # run app
 CMD ["python", "telegram_bot.py"]
