@@ -70,13 +70,13 @@ async def test_handle_help():
     message = AsyncMock(from_user=user, text="/help")
     await handle_help(message)
     message.answer.assert_called_with("Use commands:\n"
-                                       "/start to launch the bot\n"
-                                       "/stop to stop the bot\n"
-                                       "/make <format> to convert files into format\n"
-                                       "/reset to forget all uploaded files\n"
-                                       "/lang to change language\n"
-                                       "/help to see this message or\n"
-                                       "/help <command> to see additional information about chosen command\n")
+                                      "/start to launch the bot\n"
+                                      "/stop to stop the bot\n"
+                                      "/make <format> to convert files into format\n"
+                                      "/reset to forget all uploaded files\n"
+                                      "/lang to change language\n"
+                                      "/help to see this message or\n"
+                                      "/help <command> to see additional information about chosen command\n")
 
 
 @pytest.mark.asyncio
