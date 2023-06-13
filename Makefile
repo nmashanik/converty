@@ -11,6 +11,10 @@ build:
 entry:
 	docker exec -it converty_bot bash
 
+test:
+	mkdir -p storage
+	python3 -m pytest source/test.py
+
 run_db:
 	docker exec -it converty_db psql -U postgres -d converty
 
