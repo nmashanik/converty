@@ -1,7 +1,5 @@
 import pytest
 
-from aiogram import types
-
 from unittest.mock import AsyncMock
 
 from telegram_bot import (
@@ -18,10 +16,11 @@ from localization import (
     supported_languages
 )
 
+
 @pytest.mark.asyncio
 async def test_handle_start():
-    user = AsyncMock(first_name = 'TestUser', id = '12345678')
-    message=AsyncMock(from_user = user)
+    user = AsyncMock(first_name = 'TestUser',id = '12345678')
+    message = AsyncMock(from_user = user)
     await handle_start(message)
     message.answer.assert_called_with("Hi, dear TestUser, my name is Converty and I am file converter bot 😎\n"
                                         "Use /help command to find out what I can do\n")
@@ -30,7 +29,7 @@ async def test_handle_start():
 @pytest.mark.asyncio
 async def test_handle_stop():
     user = AsyncMock(first_name = 'TestUser')
-    message=AsyncMock(from_user = user)
+    message = AsyncMock(from_user = user)
     await handle_stop(message)
     message.answer.assert_called_once_with("Goodbye, dear TestUser")
 
@@ -60,7 +59,7 @@ async def test_handle_make_supported_format():
 @pytest.mark.asyncio
 async def test_handle_help():
     user = AsyncMock(first_name = 'TestUser')
-    message=AsyncMock(from_user = user, text = "/help")
+    message = AsyncMock(from_user = user, text = "/help")
     await handle_help(message)
     message.answer.assert_called_with(f"Use commands:\n"
                          "/start to launch the bot\n"
@@ -74,26 +73,22 @@ async def test_handle_help():
 
 @pytest.mark.asyncio
 async def test_handle_lang_one_param():
-    message=AsyncMock(text="/lang")
+    message = AsyncMock(text = "/lang")
     await handle_lang(message)
-    res = message.from_user.first_name
     message.answer.assert_called_with("Please specify one language")
 
 
 @pytest.mark.asyncio
 async def test_handle_lang_two_params():
-    message=AsyncMock(text="/lang ja")
+    message = AsyncMock(text = "/lang ja")
     await handle_lang(message)
-    res = message.from_user.first_name
     message.answer.assert_called_with(("Unfortunately, this language is not supported yet 😔️️️\n"
                                       "Choose supported one from: {langs}").format(langs=', '.join(map(str, supported_languages))))
 
 
 @pytest.mark.asyncio
 async def test_handle_reset():
-    user = AsyncMock(first_name = 'TestUser', id = '12345678')
-    message=AsyncMock(from_user = user)
+    user = AsyncMock(first_name = 'TestUser',id = '12345678')
+    message = AsyncMock(from_user = user)
     await handle_reset(message)
     message.answer.assert_called_with("All uploaded files deleted")
-
-
