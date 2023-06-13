@@ -8,7 +8,6 @@ from telegram_bot import (
     handle_start,
     handle_lang,
     handle_help,
-    handle_stop,
     handle_make,
     handle_reset,
     supported_conversion_formats
@@ -27,15 +26,6 @@ async def test_handle_start():
     await handle_start(message)
     message.answer.assert_called_with("Hi, dear TestUser, my name is Converty and I am file converter bot 😎\n"
                                       "Use /help command to find out what I can do\n")
-
-
-@pytest.mark.asyncio
-async def test_handle_stop():
-    """Test for /stop command"""
-    user = AsyncMock(first_name='TestUser')
-    message = AsyncMock(from_user=user)
-    await handle_stop(message)
-    message.answer.assert_called_once_with("Goodbye, dear TestUser")
 
 
 @pytest.mark.asyncio
@@ -75,6 +65,8 @@ async def test_handle_help():
                                       "/make <format> to convert files into format\n"
                                       "/reset to forget all uploaded files\n"
                                       "/lang to change language\n"
+                                      "/feedback to write us\n"
+                                      "/sendmail to add the email address\n"
                                       "/help to see this message or\n"
                                       "/help <command> to see additional information about chosen command\n")
 
