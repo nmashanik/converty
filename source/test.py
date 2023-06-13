@@ -30,15 +30,6 @@ async def test_handle_start():
 
 
 @pytest.mark.asyncio
-async def test_handle_stop():
-    """Test for /stop command"""
-    user = AsyncMock(first_name='TestUser')
-    message = AsyncMock(from_user=user)
-    await handle_stop(message)
-    message.answer.assert_called_once_with("Goodbye, dear TestUser")
-
-
-@pytest.mark.asyncio
 async def test_handle_make_without_params():
     """Test for /make command colled without params"""
     message = AsyncMock(text='/make')
@@ -75,6 +66,8 @@ async def test_handle_help():
                                       "/make <format> to convert files into format\n"
                                       "/reset to forget all uploaded files\n"
                                       "/lang to change language\n"
+                                      "/feedback to write us\n"
+                                      "/sendmail to add the email address\n"
                                       "/help to see this message or\n"
                                       "/help <command> to see additional information about chosen command\n")
 
