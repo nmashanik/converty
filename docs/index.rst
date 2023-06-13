@@ -14,6 +14,9 @@ Main commands
 - **/start**: getting started with the bot
 - **/help**: displaying a list of available commands and their description
 - **/make <format>**: creates a file of the specified format from uploaded files
+- **/lang <language>**: changes the interaction language to the selected one
+- **/feedback**: receives feedback about the service
+- **/sendmail**: remembers the user's email
 - **/reset**: reset uploaded files
 - **/stop**: stop using the bot
 
