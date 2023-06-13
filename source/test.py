@@ -19,6 +19,7 @@ from localization import (
 
 @pytest.mark.asyncio
 async def test_handle_start():
+    """Test for /start command"""
     user = AsyncMock(first_name='TestUser', id='12345678')
     message = AsyncMock(from_user=user)
     await handle_start(message)
@@ -28,6 +29,7 @@ async def test_handle_start():
 
 @pytest.mark.asyncio
 async def test_handle_stop():
+    """Test for /stop command"""
     user = AsyncMock(first_name='TestUser')
     message = AsyncMock(from_user=user)
     await handle_stop(message)
@@ -35,7 +37,8 @@ async def test_handle_stop():
 
 
 @pytest.mark.asyncio
-async def test_handle_make_one_param():
+async def test_handle_make_without_params():
+    """Test for /make command colled without params"""
     message = AsyncMock(text='/make')
     await handle_make(message)
     message.answer.assert_called_with("Please specify one convertation format")
@@ -43,6 +46,7 @@ async def test_handle_make_one_param():
 
 @pytest.mark.asyncio
 async def test_handle_make_unsupported_format():
+    """Test for /make command called with unsupported format"""
     message = AsyncMock(text='/make unsupported_format')
     await handle_make(message)
     message.answer.assert_called_with(('Oops, this format is not supported yet 😔️️️\n'
@@ -51,6 +55,7 @@ async def test_handle_make_unsupported_format():
 
 @pytest.mark.asyncio
 async def test_handle_make_supported_format():
+    """Test for /make command called with supported format, but without any uploaded files"""
     message = AsyncMock(text='/make pdf')
     await handle_make(message)
     message.answer.assert_called_with('Something went wrong, please try again later')
@@ -58,6 +63,7 @@ async def test_handle_make_supported_format():
 
 @pytest.mark.asyncio
 async def test_handle_help():
+    """Test for /help command"""
     user = AsyncMock(first_name='TestUser')
     message = AsyncMock(from_user=user, text="/help")
     await handle_help(message)
@@ -72,7 +78,8 @@ async def test_handle_help():
 
 
 @pytest.mark.asyncio
-async def test_handle_lang_one_param():
+async def test_handle_lang_without_params():
+    """Test for /lang command called without params"""
     message = AsyncMock(text="/lang")
     await handle_lang(message)
     message.answer.assert_called_with("Please specify one language")
@@ -80,6 +87,7 @@ async def test_handle_lang_one_param():
 
 @pytest.mark.asyncio
 async def test_handle_lang_two_params():
+    """Test for /lang command called with unsupported language"""
     message = AsyncMock(text="/lang ja")
     await handle_lang(message)
     message.answer.assert_called_with(("Unfortunately, this language is not supported yet 😔️️️\n"
@@ -88,7 +96,8 @@ async def test_handle_lang_two_params():
 
 @pytest.mark.asyncio
 async def test_handle_reset():
+    """Test for /reset command"""
     user = AsyncMock(first_name='TestUser', id='12345678')
     message = AsyncMock(from_user=user)
     await handle_reset(message)
-    message.answer.assert_called_with("All uploaded files deleted")
+    message.answer.assert_called_once_with("All uploaded files deleted")
