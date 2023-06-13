@@ -3,6 +3,7 @@ FROM python:3.11
 WORKDIR /root/converty/
 # install dependencies
 COPY Pipfile Pipfile.lock ./
+RUN pip install --upgrade pip
 RUN pip install pipenv
 RUN pipenv install --dev --system --deploy
 COPY locales /etc/locales

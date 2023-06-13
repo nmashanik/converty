@@ -10,6 +10,8 @@ __pycache__/
 .Python
 build/
 source/storage
+source/.mail_password
+db_dump/
 develop-eggs/
 dist/
 downloads/

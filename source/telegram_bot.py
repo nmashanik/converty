@@ -2,6 +2,7 @@
 import os
 import signal
 import shutil
+import configparser
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
@@ -21,13 +22,26 @@ from localization import (
     save_locale
 )
 
-directory_path = os.path.dirname(os.path.abspath(__file__))
-token_file_path = os.path.join(directory_path, ".secret_token")
-file = open(token_file_path, mode='r')
-TOKEN = file.read()[:-1]
-file.close()
+from db_manager import (
+    db_connect,
+    db_write_feedback,
+    db_write_email,
+    db_delete_email,
+    db_get_email
+)
 
-bot = Bot(token=TOKEN)
+from mailer import (
+    smpt_connect,
+    send_email,
+)
+
+config = configparser.ConfigParser()
+config.read("config/converty_config.ini")
+
+db = db_connect(config["Postgres"])
+smtp = smpt_connect(config["Smtp"])
+
+bot = Bot(token=config["Converty"]["SecretToken"])
 dp = Dispatcher(bot)
 
 locales_path = os.environ.get('LOCALES_PATH')
@@ -40,6 +54,10 @@ supported_conversion_formats = ["pdf", "zip", "unzip", "images"]
 
 def signal_handler(signum, frame):
     """Signal handler"""
+    if db:
+        db.close()
+    if smtp:
+        smtp.close()
     if signum == signal.SIGTERM:
         os._exit(0)
 
@@ -68,6 +86,7 @@ async def handle_stop(msg: types.Message):
     :type msg: aiogram.types.Message
     """
     shutil.rmtree(f"storage/{msg.from_user.id}", ignore_errors=True)
+    db_delete_email(db, msg.from_user.id)
     await msg.answer(_("Goodbye, dear {fname}").format(fname=msg.from_user.first_name))
 
 
@@ -79,9 +98,10 @@ async def handle_make(msg: types.Message):
     :type msg: aiogram.types.Message
     """
     text = msg.text.split()
-    if len(text) != 2:
+    if len(text) != 1 and len(text) > 3:
         return await msg.answer(_("Please specify one convertation format"))
     format = text[1]
+    send_on_mail = len(text) > 2 and text[2] == "mail"
     if format not in supported_conversion_formats:
         return await msg.answer(_("Oops, this format is not supported yet 😔️️️\n"
                                   "Choose supported one from: {formats}").format(formats=', '.join(map(str, supported_conversion_formats))))
@@ -105,6 +125,10 @@ async def handle_make(msg: types.Message):
             output = open(file_path, "rb")
             await bot.send_document(msg.chat.id, output)
             output.close()
+            if send_on_mail:
+                email = db_get_email(db, msg.from_user.id)
+                if email != "":
+                    send_email(smtp, config["Smtp"]["Login"], email, file_path)
         else:
             media_group = []
             outputs = {}
@@ -120,7 +144,8 @@ async def handle_make(msg: types.Message):
         remove_files(user_id, only_images)
     except ValueError as e:
         await msg.answer(str(e))
-    except:  # noqa: E722
+    except Exception as _ex:  # noqa: E722
+        print(f'Exception caught: {_ex}', flush=True)
         await msg.answer(_("Something went wrong, please try again later"))
 
 
@@ -165,6 +190,8 @@ async def handle_help(msg: types.Message):
                          "/make <format> to convert files into format\n"
                          "/reset to forget all uploaded files\n"
                          "/lang to change language\n"
+                         "/feedback to write us\n"
+                         "/sendmail to add the email address\n"
                          "/help to see this message or\n"
                          "/help <command> to see additional information about chosen command\n"))
         case 2:
@@ -188,11 +215,37 @@ async def handle_help(msg: types.Message):
                     message = _("Delete all uploaded files")
                 case "lang":
                     message = _("Changes bot language, supported languages: {langs}").format(langs=', '.join(map(str, supported_languages)))
+                case "feedback":
+                    message = _("Write a feedback about our service")
+                case "sendmail":
+                    message = _("Add your email address to get the processed files on it")
                 case _:
                     message = _("I don't recognize this command")
         case _:
             message = _("Please specify one command")
     await msg.answer(message)
+
+
+@dp.message_handler(commands=['feedback'])
+async def handle_feedback(msg: types.Message):
+    """Make feedback about bot"""
+    text = msg.text.split()
+    if len(text) > 1:
+        db_write_feedback(db, " ".join(text[1:]))
+        await msg.answer(_("Thanks for your feedback!"))
+    else:
+        await msg.answer(_("Write something please"))
+
+
+@dp.message_handler(commands=['sendmail'])
+async def handle_sendmail(msg: types.Message):
+    """Make feedback about bot"""
+    text = msg.text.split()
+    if len(text) > 1:
+        db_write_email(db, msg.from_user.id, text[1])
+        await msg.answer(_("Email updated!"))
+    else:
+        await msg.answer(_("Write your email, please"))
 
 
 @dp.message_handler(content_types=['text'])
