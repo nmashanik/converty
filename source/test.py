@@ -8,7 +8,6 @@ from telegram_bot import (
     handle_start,
     handle_lang,
     handle_help,
-    handle_stop,
     handle_make,
     handle_reset,
     supported_conversion_formats
