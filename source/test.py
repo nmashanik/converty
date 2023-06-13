@@ -26,6 +26,7 @@ async def test_handle_start():
     message.answer.assert_called_with("Hi, dear TestUser, my name is Converty and I am file converter bot 😎\n"
                                         "Use /help command to find out what I can do\n")
 
+
 @pytest.mark.asyncio
 async def test_handle_stop():
     user = AsyncMock(first_name = 'TestUser')
@@ -33,11 +34,13 @@ async def test_handle_stop():
     await handle_stop(message)
     message.answer.assert_called_once_with("Goodbye, dear TestUser")
 
+
 @pytest.mark.asyncio
 async def test_handle_make_one_param():
     message=AsyncMock(text = '/make')
     await handle_make(message)
     message.answer.assert_called_with("Please specify one convertation format")
+
 
 @pytest.mark.asyncio
 async def test_handle_make_unsupported_format():
@@ -46,11 +49,13 @@ async def test_handle_make_unsupported_format():
     message.answer.assert_called_with(('Oops, this format is not supported yet 😔️️️\n'
                                       'Choose supported one from: {formats}').format(formats=', '.join(map(str, supported_conversion_formats))))
 
+
 @pytest.mark.asyncio
 async def test_handle_make_supported_format():
     message=AsyncMock(text = '/make pdf')
     await handle_make(message)
     message.answer.assert_called_with('Something went wrong, please try again later')
+
 
 @pytest.mark.asyncio
 async def test_handle_help():
@@ -65,6 +70,7 @@ async def test_handle_help():
                          "/lang to change language\n"
                          "/help to see this message or\n"
                          "/help <command> to see additional information about chosen command\n")
+
 
 @pytest.mark.asyncio
 async def test_handle_lang_one_param():
@@ -81,6 +87,7 @@ async def test_handle_lang_two_params():
     res = message.from_user.first_name
     message.answer.assert_called_with(("Unfortunately, this language is not supported yet 😔️️️\n"
                                       "Choose supported one from: {langs}").format(langs=', '.join(map(str, supported_languages))))
+
 
 @pytest.mark.asyncio
 async def test_handle_reset():
