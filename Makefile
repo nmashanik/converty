@@ -10,3 +10,7 @@ build:
 
 entry:
 	docker exec -it converty_bot bash
+
+test:
+	mkdir -p storage
+	python3 -m pytest source/test.py
